@@ -1,10 +1,13 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import * as fs from "fs"
+
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+import {convert} from "../../api/main"
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win: BrowserWindow | null
@@ -22,8 +25,7 @@ function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: (process.env
-          .ELECTRON_NODE_INTEGRATION as unknown) as boolean
+      nodeIntegration: true// (process.env.ELECTRON_NODE_INTEGRATION as unknown) as boolean
     }
   })
 
@@ -71,7 +73,24 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  const setting = JSON.parse(fs.readFileSync("data/setting.json", "utf-8"))
+  console.log(setting);
+  ipcMain.handle("give-me-setting", async (event, arg) => {
+    try {
+      return setting;
+    } catch (e) {
+      return {}
+    }
+  });
+
+  ipcMain.handle("convert-json-to-docx", async (event, arg) => {
+    console.log(arg);
+    await convert(arg);
+
+  });
+
   createWindow()
+
 })
 
 // Exit cleanly on request from parent process in development mode.
