@@ -1,0 +1,17 @@
+{
+    "defaultSeverity": "warn",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "semi": "warn",
+        "indent": "warn",
+        "variable-name": [
+            true,
+            "allow-pascal-case"
+        ],
+        "ban-ts-ignore": "off"
+    },
+    "rulesDirectory": []
+}
